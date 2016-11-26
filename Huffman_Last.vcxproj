@@ -79,9 +79,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="huf_Deakyu.cpp" />
+    <ClCompile Include="huf_heap_implementation.cpp" />
     <ClCompile Include="stack_implementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="huf_minheap.h" />
     <ClInclude Include="stack.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

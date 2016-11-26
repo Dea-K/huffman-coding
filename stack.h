@@ -1,3 +1,6 @@
+#ifndef STACK_H
+#define STACK_H
+
 struct tableType
 {
 	char ch;
@@ -24,3 +27,5 @@ public:
 	void printStack();
 	int size();
 };
+
+#endif

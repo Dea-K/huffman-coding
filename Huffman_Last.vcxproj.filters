@@ -21,9 +21,15 @@
     <ClCompile Include="stack_implementation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="huf_heap_implementation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="huf_minheap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
