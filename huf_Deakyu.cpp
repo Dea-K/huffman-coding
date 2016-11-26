@@ -33,6 +33,8 @@ public:
 	bool isEmpty();
 	void print();
 	void mergeNodes(char);
+	void traverse(hufNode *, int[], int);
+	void print(int[], int);
 private:
 	hufNode **data;
 	int heapSize;
@@ -43,6 +45,7 @@ private:
 	int getParentIndex(int);
 	void shiftUp(int);
 	void shiftDown(int);
+	bool isLeaf(hufNode*);
 };
 
 hufNode** readCount(string&, string, char&);
@@ -61,7 +64,9 @@ int main()
 	hufHeap.buildHeap(chars);
 	//hufHeap.print();
 	hufHeap.mergeNodes(notUsed);
-	hufHeap.print();
+	//hufHeap.print();
+	int arr[NUM_ALL_CHAR], top = 0;
+	hufHeap.traverse(hufHeap.getMinimum(), arr, top);
 
 	
 	system("pause");
@@ -266,8 +271,41 @@ void MinHeap::mergeNodes(char notUsed)
 	removeMin();
 
 	newNode->freq = newNode->left->freq + newNode->right->freq;
-	cout << newNode->left->ch << "+" << newNode->right->ch << " : " << newNode->freq << endl;
-	system("pause");
+	/*cout << newNode->left->ch << "+" << newNode->right->ch << " : " << newNode->freq << endl;
+	system("pause");*/
 	insert(newNode);
 	mergeNodes(notUsed);
+
+}
+
+bool MinHeap::isLeaf(hufNode *walker)
+{
+	return ((walker->left == nullptr) && (walker->right == nullptr));
+}
+
+void MinHeap::traverse(hufNode *walker, int arr[], int top)
+{
+	if (walker->left != nullptr)
+	{
+		arr[top] = 0;
+		traverse(walker->left, arr, top + 1);
+	}
+
+	if (walker->right != nullptr)
+	{
+		arr[top] = 1;
+		traverse(walker->right, arr, top+1);
+	}
+	if (isLeaf(walker))
+	{
+		cout << walker->ch << ": ";
+		print(arr, top);
+	}
+}
+
+void MinHeap::print(int arr[], int n)
+{
+	for (int i = 0; i < n; i++)
+		cout << arr[i];
+	cout << endl;
 }
