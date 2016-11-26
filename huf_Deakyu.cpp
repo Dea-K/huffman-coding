@@ -32,6 +32,7 @@ public:
 	void removeMin();
 	bool isEmpty();
 	void print();
+	void mergeNodes(char);
 private:
 	hufNode **data;
 	int heapSize;
@@ -44,19 +45,22 @@ private:
 	void shiftDown(int);
 };
 
-hufNode** readCount(string&, string);
+hufNode** readCount(string&, string, char&);
 
 #endif
 
 int main()
 {
-	string fileName = "text.txt";
+	string fileName = "test.txt";
 	string str = "";
+	char notUsed = ' ';
 	MinHeap hufHeap(NUM_ALL_CHAR);
 
-	hufNode **chars = readCount(str, fileName);
+	hufNode **chars = readCount(str, fileName, notUsed);
 
 	hufHeap.buildHeap(chars);
+	//hufHeap.print();
+	hufHeap.mergeNodes(notUsed);
 	hufHeap.print();
 
 	
@@ -64,7 +68,7 @@ int main()
 	return 0;
 }
 
-hufNode** readCount(string &str, string filename)
+hufNode** readCount(string &str, string filename, char &notUsed)
 {
 	ifstream indata;
 	char ch;
@@ -97,6 +101,15 @@ hufNode** readCount(string &str, string filename)
 	str = temp.substr(0, temp.size() - 1);
 	tempN[(int)ch]->freq--;
 	indata.close();
+
+	for (int i = 0; i < NUM_ALL_CHAR; i++)
+	{
+		if (tempN[i]->freq == 0)
+		{
+			notUsed = tempN[i]->ch;
+			break;
+		}
+	}
 
 	return tempN;
 	delete[]tempN;
@@ -230,4 +243,31 @@ void MinHeap::print()
 		cout << getMinimum()->ch << ":" << getMinimum()->freq << endl;
 		removeMin();
 	}
+
+}
+
+void MinHeap::mergeNodes(char notUsed)
+{
+	if (heapSize < 1)
+		return;
+	hufNode *newNode = new hufNode;
+	newNode->ch = notUsed;
+
+	newNode->left = getMinimum();
+	removeMin();
+	if (heapSize < 1)
+	{
+		newNode->right = nullptr;
+		newNode->freq = newNode->left->freq;
+		insert(newNode);
+		return;
+	}
+	newNode->right = getMinimum();
+	removeMin();
+
+	newNode->freq = newNode->left->freq + newNode->right->freq;
+	cout << newNode->left->ch << "+" << newNode->right->ch << " : " << newNode->freq << endl;
+	system("pause");
+	insert(newNode);
+	mergeNodes(notUsed);
 }
