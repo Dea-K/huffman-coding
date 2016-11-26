@@ -26,14 +26,14 @@ class MinHeap
 public:
 	MinHeap(int);
 	~MinHeap();
-	int getMinimum();
-	void insert(int);
-	void buildHeap(int*);
+	hufNode* getMinimum();
+	void insert(hufNode*);
+	void buildHeap(hufNode**);
 	void removeMin();
 	void print();
 	bool isEmpty();
 private:
-	int *data;
+	hufNode **data;
 	int heapSize;
 	int arraySize;
 
@@ -42,7 +42,6 @@ private:
 	int getParentIndex(int);
 	void shiftUp(int);
 	void shiftDown(int);
-	void printHeap(int*, int, int, int);
 };
 
 hufNode** readCount(string&, string);
@@ -107,7 +106,7 @@ hufNode** readCount(string &str, string filename)
 
 MinHeap::MinHeap(int maxSize)
 {
-	data = new int[maxSize];
+	data = new hufNode*[maxSize];
 	heapSize = 0;
 	arraySize = maxSize;
 }
@@ -115,6 +114,8 @@ MinHeap::MinHeap(int maxSize)
 MinHeap::~MinHeap()
 {
 	delete[]data;
+	for (int i = 0; i < arraySize; i++)
+		delete data[i];
 }
 
 bool MinHeap::isEmpty()
@@ -137,7 +138,7 @@ int MinHeap::getParentIndex(int nodeIndex)
 	return (nodeIndex - 1) / 2;
 }
 
-int MinHeap::getMinimum()
+hufNode* MinHeap::getMinimum()
 {
 	if (isEmpty())
 		throw string("Heap is Empty...");
@@ -147,7 +148,8 @@ int MinHeap::getMinimum()
 
 void MinHeap::shiftUp(int nodeIndex)
 {
-	int parentIndex, temp;
+	int parentIndex;
+	hufNode *temp;
 	if (nodeIndex != 0)
 	{
 		parentIndex = getParentIndex(nodeIndex);
@@ -161,7 +163,7 @@ void MinHeap::shiftUp(int nodeIndex)
 	}
 }
 
-void MinHeap::insert(int value)
+void MinHeap::insert(hufNode* value)
 {
 	if (heapSize == arraySize)
 		throw string("Heap is Full...");
@@ -175,7 +177,8 @@ void MinHeap::insert(int value)
 
 void MinHeap::shiftDown(int nodeIndex)
 {
-	int leftChildIndex, rightChildIndex, minIndex, temp;
+	int leftChildIndex, rightChildIndex, minIndex;
+	hufNode *temp;
 	leftChildIndex = getLeftChildIndex(nodeIndex);
 	rightChildIndex = getRightChildIndex(nodeIndex);
 	if (rightChildIndex >= heapSize)
@@ -215,29 +218,7 @@ void MinHeap::removeMin()
 	}
 }
 
-void MinHeap::print()
-{
-	printHeap(data, 0, heapSize - 1, 0);
-}
-
-void MinHeap::printHeap(int *heap, int root, int heapLast, int level)
-{
-	int child;
-	int i;
-	if (root <= heapLast)
-	{
-		child = (root * 2 + 1);
-		printHeap(heap, child + 1, heapLast, level + 1);
-
-		for (int i = 0; i < level; i++)
-			cout << "     ";
-		cout << setw(4) << heap[root] << endl;
-		printHeap(heap, child, heapLast, level + 1);
-	}
-	return;
-}
-
-void MinHeap::buildHeap(int *arr)
+void MinHeap::buildHeap(hufNode **arr)
 {
 	for (int i = 0; i < arraySize; i++)
 	{
