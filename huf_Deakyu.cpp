@@ -59,7 +59,7 @@ public:
 	bool isEmpty();
 	void print();
 	void mergeNodes(char);
-	void traverse(hufNode *, int[], int);
+	void traverse(hufNode *, int[], int, Stack&);
 	void print(int[], int);
 private:
 	hufNode **data;
@@ -84,6 +84,7 @@ int main()
 	string str = "";
 	char notUsed = ' ';
 	MinHeap hufHeap(NUM_ALL_CHAR);
+	Stack S(100);
 
 	hufNode **chars = readCount(str, fileName, notUsed);
 
@@ -92,8 +93,21 @@ int main()
 	hufHeap.mergeNodes(notUsed);
 	//hufHeap.print();
 	int arr[NUM_ALL_CHAR], top = 0;
-	hufHeap.traverse(hufHeap.getMinimum(), arr, top);
+	hufHeap.traverse(hufHeap.getMinimum(), arr, top, S);
+	
 
+	// following generates tableType array that stores the huffman table;
+	int tableSize = S.size();
+	tableType *hufTable = new tableType[tableSize];
+	for (int i = 0; i < tableSize; i++)
+		S.pop(hufTable[i]);
+	for (int i = 0; i < tableSize; i++)
+	{
+		cout << hufTable[i].ch << ":";
+		for (int j = 0; j < hufTable[i].repSize; j++)
+			cout << hufTable[i].binRep[j];
+		cout << endl;
+	}
 	
 	system("pause");
 	return 0;
@@ -309,23 +323,32 @@ bool MinHeap::isLeaf(hufNode *walker)
 	return ((walker->left == nullptr) && (walker->right == nullptr));
 }
 
-void MinHeap::traverse(hufNode *walker, int arr[], int top)
+void MinHeap::traverse(hufNode *walker, int arr[], int top, Stack &S)
 {
 	if (walker->left != nullptr)
 	{
 		arr[top] = 0;
-		traverse(walker->left, arr, top + 1);
+		traverse(walker->left, arr, top + 1, S);
 	}
 
 	if (walker->right != nullptr)
 	{
 		arr[top] = 1;
-		traverse(walker->right, arr, top+1);
+		traverse(walker->right, arr, top+1, S);
 	}
 	if (isLeaf(walker))
 	{
-		cout << walker->ch << ":\t" << "freq:\t" << walker->freq << "\trep:\t";
-		print(arr, top);
+		/*cout << walker->ch << ":\t" << "freq:\t" << walker->freq << "\trep:\t";
+		print(arr, top);*/
+
+
+		tableType temp;
+		temp.ch = walker->ch;
+		temp.repSize = top;
+		temp.binRep = new int[top];
+		for (int i = 0; i < top; i++)
+			temp.binRep[i] = arr[i];
+		S.push(temp);
 	}
 }
 
@@ -335,6 +358,14 @@ void MinHeap::print(int arr[], int n)
 		cout << arr[i];
 	cout << endl;
 }
+
+
+
+
+
+//////////////////////////////////////////////////////////////////
+/////////////  STACK	//////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 Stack::Stack(int size)
 {
@@ -412,7 +443,7 @@ void Stack::printStack()
 	cout << "My Stack is: " << endl;
 	for (int i = size() - 1; i >-1; i--)
 	{
-		cout << data[i].ch << ":" << data[i].binRep;
+		cout << data[i].ch << ":" << data[i].repSize << endl;
 	}
 	cout << endl;
 }
