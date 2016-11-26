@@ -30,8 +30,8 @@ public:
 	void insert(hufNode*);
 	void buildHeap(hufNode**);
 	void removeMin();
-	void print();
 	bool isEmpty();
+	void print();
 private:
 	hufNode **data;
 	int heapSize;
@@ -52,12 +52,12 @@ int main()
 {
 	string fileName = "text.txt";
 	string str = "";
-
+	MinHeap hufHeap(NUM_ALL_CHAR);
 
 	hufNode **chars = readCount(str, fileName);
-	for (int i = 0; i < NUM_ALL_CHAR; i++)
-		cout << chars[i]->ch << ": " << chars[i]->freq << endl;
-	cout << str << endl;
+
+	hufHeap.buildHeap(chars);
+	hufHeap.print();
 
 	
 	system("pause");
@@ -86,7 +86,7 @@ hufNode** readCount(string &str, string filename)
 	if (!indata)
 	{
 		cout << "Error opening the file..." << endl;
-		return;
+		exit(1);
 	}
 	while (!indata.eof())
 	{
@@ -100,8 +100,6 @@ hufNode** readCount(string &str, string filename)
 
 	return tempN;
 	delete[]tempN;
-	for (int i = 0; i < NUM_ALL_CHAR; i++)
-		delete tempN[i];
 }
 
 MinHeap::MinHeap(int maxSize)
@@ -114,8 +112,6 @@ MinHeap::MinHeap(int maxSize)
 MinHeap::~MinHeap()
 {
 	delete[]data;
-	for (int i = 0; i < arraySize; i++)
-		delete data[i];
 }
 
 bool MinHeap::isEmpty()
@@ -153,7 +149,7 @@ void MinHeap::shiftUp(int nodeIndex)
 	if (nodeIndex != 0)
 	{
 		parentIndex = getParentIndex(nodeIndex);
-		if (data[nodeIndex] < data[parentIndex])
+		if (data[nodeIndex]->freq < data[parentIndex]->freq)
 		{
 			temp = data[nodeIndex];
 			data[nodeIndex] = data[parentIndex];
@@ -190,13 +186,13 @@ void MinHeap::shiftDown(int nodeIndex)
 	}
 	else
 	{
-		if (data[leftChildIndex] <= data[rightChildIndex])
+		if (data[leftChildIndex]->freq <= data[rightChildIndex]->freq)
 			minIndex = leftChildIndex;
 		else
 			minIndex = rightChildIndex;
 	}
 
-	if (data[nodeIndex] > data[minIndex])
+	if (data[nodeIndex]->freq > data[minIndex]->freq)
 	{
 		temp = data[nodeIndex];
 		data[nodeIndex] = data[minIndex];
@@ -222,6 +218,16 @@ void MinHeap::buildHeap(hufNode **arr)
 {
 	for (int i = 0; i < arraySize; i++)
 	{
-		insert(arr[i]);
+		if (arr[i]->freq>0)
+			insert(arr[i]);
+	}
+}
+
+void MinHeap::print()
+{
+	while (!isEmpty())
+	{
+		cout << getMinimum()->ch << ":" << getMinimum()->freq << endl;
+		removeMin();
 	}
 }
