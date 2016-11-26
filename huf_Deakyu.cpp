@@ -21,6 +21,32 @@ struct hufNode
 	hufNode *right;
 };
 
+struct tableType
+{
+	char ch;
+	int *binRep;
+	int repSize;
+};
+
+class Stack
+{
+private:
+	tableType *data;
+	int maxSize;
+	int top;
+	int count;
+public:
+	Stack(int);
+	~Stack();
+	bool isEmpty();
+	bool isFull();
+	void push(tableType);
+	void pop(tableType&);
+	void stackTop(tableType&);
+	void printStack();
+	int size();
+};
+
 class MinHeap
 {
 public:
@@ -54,7 +80,7 @@ hufNode** readCount(string&, string, char&);
 
 int main()
 {
-	string fileName = "test.txt";
+	string fileName = "text.txt";
 	string str = "";
 	char notUsed = ' ';
 	MinHeap hufHeap(NUM_ALL_CHAR);
@@ -298,7 +324,7 @@ void MinHeap::traverse(hufNode *walker, int arr[], int top)
 	}
 	if (isLeaf(walker))
 	{
-		cout << walker->ch << ": ";
+		cout << walker->ch << ":\t" << "freq:\t" << walker->freq << "\trep:\t";
 		print(arr, top);
 	}
 }
@@ -307,5 +333,86 @@ void MinHeap::print(int arr[], int n)
 {
 	for (int i = 0; i < n; i++)
 		cout << arr[i];
+	cout << endl;
+}
+
+Stack::Stack(int size)
+{
+	maxSize = size;
+	count = 0;
+	top = -1;
+	data = new tableType[maxSize];
+}
+
+Stack::~Stack()
+{
+	delete[]data;
+}
+
+void Stack::push(tableType indata)
+{
+	if (count < maxSize)
+	{
+		count++;
+		top++;
+		data[top] = indata;
+	}
+	else
+	{
+		cout << "Stack is full..." << endl;
+		return;
+	}
+}
+
+void Stack::pop(tableType &outdata)
+{
+	if (count > 0)
+	{
+		count--;
+		outdata = data[top];
+		top--;
+	}
+	else
+	{
+		cout << "Stack is Empty..." << endl;
+		return;
+	}
+}
+
+void Stack::stackTop(tableType &outdata)
+{
+	if (count > 0)
+	{
+		outdata = data[top];
+	}
+	else
+	{
+		cout << "Stack is Empty..." << endl;
+		return;
+	}
+}
+
+bool Stack::isEmpty()
+{
+	return (count<1);
+}
+
+bool Stack::isFull()
+{
+	return (count>maxSize - 1);
+}
+
+int Stack::size()
+{
+	return count;
+}
+
+void Stack::printStack()
+{
+	cout << "My Stack is: " << endl;
+	for (int i = size() - 1; i >-1; i--)
+	{
+		cout << data[i].ch << ":" << data[i].binRep;
+	}
 	cout << endl;
 }
