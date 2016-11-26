@@ -20,19 +20,17 @@ struct hufNode
 	hufNode *right;
 };
 
-void readCount(hufNode**&, string&, string);
-hufNode **buildInitial();
+hufNode** readCount(string&, string);
 
 #endif
 
 int main()
 {
-	hufNode **chars = buildInitial();
 	string fileName = "text.txt";
 	string str = "";
 
 
-	readCount(chars, str, fileName);
+	hufNode **chars = readCount(str, fileName);
 	for (int i = 0; i < NUM_ALL_CHAR; i++)
 		cout << chars[i]->ch << ": " << chars[i]->freq << endl;
 	cout << str << endl;
@@ -42,28 +40,24 @@ int main()
 	return 0;
 }
 
-hufNode **buildInitial()
-{
-	hufNode **temp = new hufNode*[NUM_ALL_CHAR];
-	for (int i = 0; i < NUM_ALL_CHAR; i++)
-	{
-		temp[i] = new hufNode;
-		temp[i]->ch = (char)i;
-		temp[i]->freq = 0;
-		temp[i]->left = nullptr;
-		temp[i]->right = nullptr;
-	}
-	return temp;
-	delete[]temp;
-	for (int i = 0; i < NUM_ALL_CHAR; i++)
-		delete temp[i];
-}
-
-void readCount(hufNode **&Nodes, string &str, string filename)
+hufNode** readCount(string &str, string filename)
 {
 	ifstream indata;
 	char ch;
 	string temp = "";
+
+
+	hufNode **tempN = new hufNode*[NUM_ALL_CHAR];
+	for (int i = 0; i < NUM_ALL_CHAR; i++)
+	{
+		tempN[i] = new hufNode;
+		tempN[i]->ch = (char)i;
+		tempN[i]->freq = 0;
+		tempN[i]->left = nullptr;
+		tempN[i]->right = nullptr;
+	}
+
+
 	indata.open(filename);
 	if (!indata)
 	{
@@ -74,10 +68,14 @@ void readCount(hufNode **&Nodes, string &str, string filename)
 	{
 		indata.get(ch);
 		temp = temp + ch;
-		Nodes[(int)ch]->freq++;
+		tempN[(int)ch]->freq++;
 	}
 	str = temp.substr(0, temp.size() - 1);
-	Nodes[(int)ch]->freq--;
+	tempN[(int)ch]->freq--;
 	indata.close();
 
+	return tempN;
+	delete[]tempN;
+	for (int i = 0; i < NUM_ALL_CHAR; i++)
+		delete tempN[i];
 }
