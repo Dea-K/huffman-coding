@@ -4,6 +4,7 @@
 #ifndef HUFFMAN_H
 #define HUFFMAN_H
 
+#include <bitset>
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -16,7 +17,7 @@ using namespace std;
 
 
 hufNode** readCount(string&, string, char&);
-void encodedFileMaker(tableType*, string);
+void encodedFileMaker(tableType*, int, string, string);
 
 #endif
 
@@ -34,7 +35,8 @@ int main()
 	//hufHeap.print();
 	hufHeap.mergeNodes(notUsed);
 	//hufHeap.print();
-	int arr[NUM_ALL_CHAR], top = 0;
+	int arr[NUM_ALL_CHAR];
+	int top = 0;
 	hufHeap.traverse(hufHeap.getMinimum(), arr, top, S);
 	
 
@@ -50,6 +52,8 @@ int main()
 			cout << hufTable[i].binRep[j];
 		cout << endl;
 	}
+
+	encodedFileMaker(hufTable, tableSize, fileName, "result.txt");
 	
 	system("pause");
 	return 0;
@@ -98,12 +102,66 @@ hufNode** readCount(string &str, string filename, char &notUsed)
 		}
 	}
 
+	cout << "initial file's size: " << str.size() << endl;
 	return tempN;
 	delete[]tempN;
 }
 
-//void encodedFileMaker(tableType*, string)
-//{
-//
-//}
+void encodedFileMaker(tableType* hufTable, int tableSize, string filename, string encodedfile)
+{
+	ifstream inD;
+	inD.open(filename);
+	if (!inD)
+	{
+		cout << "Error opening the file..." << endl;
+		return;
+	}
+
+	char ch = ' ';
+	string result = "";
+	string temp = "";
+	bitset<100> outbit[100];
+	while (!inD.eof())
+	{
+		inD.get(ch);
+		for (int i = 0; i < tableSize; i++)
+		{
+			if (hufTable[i].ch == ch)
+			{
+				for (int j = 0; j < hufTable[i].repSize; j++)
+				{
+					result += (char)hufTable[i].binRep[j] + '0';
+					outbit[i][j] = hufTable[i].binRep[j];
+				}
+				break;
+			}
+		}
+		//result += " ";
+	}
+	inD.close();
+
+	ofstream outD("result.bin", ios::binary);
+	for (int i = 0; i < tableSize; i++)
+		for (int j = 0; j < hufTable[i].repSize; j++)
+			outD << outbit[i][j];
+	outD.close();
+
+	cout << "result's file size: " << result.size() << endl;
+
+
+
+	/*ifstream bitD("result.bin", ios::binary);
+	char tmp = ' ';
+	string stemp = "";
+	for (int i = 0; i < tableSize; i++)
+	{
+		for (int j = 0; j < hufTable[i].repSize; j++)
+		{
+			bitD.get(tmp);
+			stemp += tmp;
+		}
+	}
+	bitD.close();
+	cout << "stemp: " << stemp << endl;*/
+}
 

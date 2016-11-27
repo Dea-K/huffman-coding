@@ -136,20 +136,31 @@ void MinHeap::print()
 
 void MinHeap::mergeNodes(char notUsed)
 {
-	if (heapSize < 1)
+	if (heapSize < 3)
+	{
+		hufNode *newNode = new hufNode;
+		newNode->ch = notUsed;
+
+		newNode->left = getMinimum();
+		removeMin();
+		newNode->right = getMinimum();
+		removeMin();
+		newNode->freq = newNode->left->freq + newNode->right->freq;
+		insert(newNode);
 		return;
+	}
 	hufNode *newNode = new hufNode;
 	newNode->ch = notUsed;
 
 	newNode->left = getMinimum();
 	removeMin();
-	if (heapSize < 1)
+	/*if (heapSize < 1)
 	{
 		newNode->right = nullptr;
 		newNode->freq = newNode->left->freq;
 		insert(newNode);
 		return;
-	}
+	}*/
 	newNode->right = getMinimum();
 	removeMin();
 
@@ -168,12 +179,12 @@ bool MinHeap::isLeaf(hufNode *walker)
 
 void MinHeap::traverse(hufNode *walker, int arr[], int top, Stack &S)
 {
+	
 	if (walker->left != nullptr)
 	{
 		arr[top] = 0;
 		traverse(walker->left, arr, top + 1, S);
 	}
-
 	if (walker->right != nullptr)
 	{
 		arr[top] = 1;
@@ -183,8 +194,7 @@ void MinHeap::traverse(hufNode *walker, int arr[], int top, Stack &S)
 	{
 		/*cout << walker->ch << ":\t" << "freq:\t" << walker->freq << "\trep:\t";
 		print(arr, top);*/
-
-
+		
 		tableType temp;
 		temp.ch = walker->ch;
 		temp.repSize = top;
