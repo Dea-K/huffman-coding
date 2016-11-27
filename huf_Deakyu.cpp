@@ -19,7 +19,9 @@ using namespace std;
 hufNode** readCount(string&, string, char&);
 // returns a string resulted from the encoded file (encoding process included)
 string encodedFileMaker(tableType*, int, string, string);
+string decodedBinRep(string);
 int binaryToDecimal(string);
+string decBinRet(int);
 #endif
 
 int main()
@@ -57,7 +59,9 @@ int main()
 	string binStringFromFile = encodedFileMaker(hufTable, tableSize, fileName, "result.txt");
 	cout << "Resulting string from encoded file: " << endl
 		<< binStringFromFile << endl;
-	
+
+	cout << decodedBinRep(binStringFromFile) << endl;
+
 	system("pause");
 	return 0;
 }
@@ -157,12 +161,29 @@ string encodedFileMaker(tableType* hufTable, int tableSize, string filename, str
 		codedResult += charRep[i];
 	}
 
-	ofstream outD;
+	/*ofstream outD;
 	outD.open(encodedfile);
 	outD << codedResult;
-	outD.close();
+	outD.close();*/
 
 	return codedResult;
+}
+
+string decodedBinRep(string encodedResult)
+{
+	int sizeEnResult = encodedResult.size();
+	string *temp = new string[sizeEnResult];
+	int *intTemp = new int[sizeEnResult];
+	string decodedResult = "";
+	for (int i = 0; i < sizeEnResult; i++)
+	{
+		intTemp[i] = (int)encodedResult[i];
+		bitset<8> tempBit(intTemp[i]);
+		temp[i] = tempBit.to_string();
+		decodedResult += temp[i];
+		decodedResult += char(32);
+	}
+	return decodedResult;
 }
 
 int binaryToDecimal(string binNumber)
@@ -209,4 +230,15 @@ int binaryToDecimal(string binNumber)
 
 	return decimalRep;
 
+}
+
+string decBinRet(int quotient)
+{
+	if (quotient == 0)
+		return "";
+	else
+	{
+		char bin = static_cast<char>(quotient % 2) + '0';
+		return decBinRet(quotient / 2) + bin;
+	}
 }
