@@ -18,7 +18,7 @@ using namespace std;
 // reads the file and creates initial nodes
 hufNode** readCount(string&, string, char&);
 // returns a string resulted from the encoded file (encoding process included)
-string encodedFileMaker(tableType*, int, string, string);
+string encodedFileMaker(tableType*&, int, string, string);
 string decodedBinRep(string);
 int binaryToDecimal(string);
 string decBinRet(int);
@@ -35,7 +35,6 @@ int main()
 	hufNode **chars = readCount(str, fileName, notUsed);
 
 	hufHeap.buildHeap(chars);
-	//hufHeap.print();
 	hufHeap.mergeNodes(notUsed);
 	//hufHeap.print();
 	int arr[NUM_ALL_CHAR];
@@ -63,6 +62,7 @@ int main()
 	cout << decodedBinRep(binStringFromFile) << endl;
 
 	system("pause");
+	delete[]hufTable;
 	return 0;
 }
 
@@ -114,7 +114,7 @@ hufNode** readCount(string &str, string filename, char &notUsed)
 	delete[]tempN;
 }
 
-string encodedFileMaker(tableType* hufTable, int tableSize, string filename, string encodedfile)
+string encodedFileMaker(tableType*& hufTable, int tableSize, string filename, string encodedfile)
 {
 	ifstream inD;
 	inD.open(filename);
@@ -167,6 +167,9 @@ string encodedFileMaker(tableType* hufTable, int tableSize, string filename, str
 	outD.close();*/
 
 	return codedResult;
+	delete[]temp;
+	delete[]decRep;
+	delete[]charRep;
 }
 
 string decodedBinRep(string encodedResult)
@@ -182,12 +185,14 @@ string decodedBinRep(string encodedResult)
 		bitset<8> tempBit(intTemp[i]);
 		temp[i] = tempBit.to_string();
 		decodedResult += temp[i];
-		decodedResult += char(32);
+		decodedResult += char(32);	// To be deleted (visual recognition purpose)
 	}
 	temp[sizeEnResult - 1] = decBinRet(encodedResult[sizeEnResult - 1]);
 	decodedResult += temp[sizeEnResult - 1];
 
 	return decodedResult;
+	delete[]temp;
+	delete[]intTemp;
 }
 
 int binaryToDecimal(string binNumber)
