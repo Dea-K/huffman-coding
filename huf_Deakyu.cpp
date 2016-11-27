@@ -19,12 +19,12 @@ using namespace std;
 hufNode** readCount(string&, string, char&);
 // returns a string resulted from the encoded file (encoding process included)
 string encodedFileMaker(tableType*, int, string, string);
-
+int binaryToDecimal(string);
 #endif
 
 int main()
 {
-	string fileName = "text.txt";
+	string fileName = "test.txt";
 	string str = "";
 	char notUsed = ' ';
 	MinHeap hufHeap(NUM_ALL_CHAR);
@@ -122,9 +122,6 @@ string encodedFileMaker(tableType* hufTable, int tableSize, string filename, str
 
 	char ch = ' ';
 	string result = "";
-	string temp = "";
-	bitset<100> outbit[100];
-	ofstream outD(encodedfile, ios::binary);
 	while (!inD.eof())
 	{
 		inD.get(ch);
@@ -133,27 +130,83 @@ string encodedFileMaker(tableType* hufTable, int tableSize, string filename, str
 			if (hufTable[i].ch == ch)
 			{
 				for (int j = 0; j < hufTable[i].repSize; j++)
-				{
 					result += (char)hufTable[i].binRep[j] + '0';
-					outbit[i][j] = hufTable[i].binRep[j];
-					outD << outbit[i][j];
-				}
 				break;
 			}
 		}
 	}
 	inD.close();
+	int tempSize = (result.size() / 8) + 1;
+	string *temp = new string[tempSize];
+	int *decRep = new int[tempSize];
+	char *charRep = new char[tempSize];
+	string codedResult = "";
+	for (int i = 0; i < result.size(); i++)
+	{
+		temp[i / 8] += result[i];
+	}
+	cout << "temp: " << endl;
+	for (int i = 0; i < tempSize; i++)
+		cout << temp[i] << " ";
+	cout << endl;
+
+	for (int i = 0; i < tempSize; i++)
+	{
+		decRep[i] = binaryToDecimal(temp[i]);
+		charRep[i] = (char)decRep[i];
+		codedResult += charRep[i];
+	}
+
+	ofstream outD;
+	outD.open(encodedfile);
+	outD << codedResult;
 	outD.close();
 
+	return codedResult;
+}
 
-	ifstream bitD(encodedfile, ios::binary);
-	char tmp = ' ';
-	string stemp = "";
-	while (!bitD.eof())
+int binaryToDecimal(string binNumber)
+{
+	// Write a function that converts a binary number to its decimal equivalent. The functinos takes
+	// one string parameter representing a binary number and returns its decimal representation as an
+	// integer
+
+	int leng = binNumber.length();	// holds the length of the binary number string
+	int backwardIndex;				// holds the backward index of the binary number
+	int poweredNum[50];				// holds the number to multiply for each binary number (2^0, 2^1, etc.)
+	int numberToMul[50];			// holds the binary number to be multiplied by the powered number(1, 0)
+	int decimalRep = 0;				// holds the binary representation of a decimal number
+
+	backwardIndex = leng;
+
+	int count = 0;
+
+	while (count < leng)
 	{
-		bitD.get(tmp);
-		stemp += tmp;
+		// this line takes the number equivalent of char '1' or '0' and subtract '0' to make it actual '1's and '0's
+		numberToMul[count] = int(binNumber[backwardIndex - 1]) - '0';
+
+		// index counting
+		backwardIndex--;
+		count++;
 	}
-	bitD.close();
-	return stemp;
+
+	count = 0;		// reset the counter
+
+	while (count <leng)
+	{
+		poweredNum[count] = pow(2, count);
+		count++;
+	}
+
+	count = 0;		// reset the counter
+
+	while (count <leng)
+	{
+		decimalRep += numberToMul[count] * poweredNum[count];
+		count++;
+	}
+
+	return decimalRep;
+
 }
