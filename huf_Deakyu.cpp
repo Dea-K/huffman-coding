@@ -15,9 +15,10 @@
 using namespace std;
 
 
-
+// reads the file and creates initial nodes
 hufNode** readCount(string&, string, char&);
-void encodedFileMaker(tableType*, int, string, string);
+// returns a string resulted from the encoded file (encoding process included)
+string encodedFileMaker(tableType*, int, string, string);
 
 #endif
 
@@ -53,7 +54,9 @@ int main()
 		cout << endl;
 	}
 
-	encodedFileMaker(hufTable, tableSize, fileName, "result.txt");
+	string binStringFromFile = encodedFileMaker(hufTable, tableSize, fileName, "result.txt");
+	cout << "Resulting string from encoded file: " << endl
+		<< binStringFromFile << endl;
 	
 	system("pause");
 	return 0;
@@ -107,20 +110,21 @@ hufNode** readCount(string &str, string filename, char &notUsed)
 	delete[]tempN;
 }
 
-void encodedFileMaker(tableType* hufTable, int tableSize, string filename, string encodedfile)
+string encodedFileMaker(tableType* hufTable, int tableSize, string filename, string encodedfile)
 {
 	ifstream inD;
 	inD.open(filename);
 	if (!inD)
 	{
 		cout << "Error opening the file..." << endl;
-		return;
+		exit(1);
 	}
 
 	char ch = ' ';
 	string result = "";
 	string temp = "";
 	bitset<100> outbit[100];
+	ofstream outD(encodedfile, ios::binary);
 	while (!inD.eof())
 	{
 		inD.get(ch);
@@ -132,36 +136,24 @@ void encodedFileMaker(tableType* hufTable, int tableSize, string filename, strin
 				{
 					result += (char)hufTable[i].binRep[j] + '0';
 					outbit[i][j] = hufTable[i].binRep[j];
+					outD << outbit[i][j];
 				}
 				break;
 			}
 		}
-		//result += " ";
 	}
 	inD.close();
-
-	ofstream outD("result.bin", ios::binary);
-	for (int i = 0; i < tableSize; i++)
-		for (int j = 0; j < hufTable[i].repSize; j++)
-			outD << outbit[i][j];
 	outD.close();
 
-	cout << "result's file size: " << result.size() << endl;
 
-
-
-	/*ifstream bitD("result.bin", ios::binary);
+	ifstream bitD(encodedfile, ios::binary);
 	char tmp = ' ';
 	string stemp = "";
-	for (int i = 0; i < tableSize; i++)
+	while (!bitD.eof())
 	{
-		for (int j = 0; j < hufTable[i].repSize; j++)
-		{
-			bitD.get(tmp);
-			stemp += tmp;
-		}
+		bitD.get(tmp);
+		stemp += tmp;
 	}
 	bitD.close();
-	cout << "stemp: " << stemp << endl;*/
+	return stemp;
 }
-
