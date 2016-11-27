@@ -175,7 +175,8 @@ string decodedBinRep(string encodedResult)
 	string *temp = new string[sizeEnResult];
 	int *intTemp = new int[sizeEnResult];
 	string decodedResult = "";
-	for (int i = 0; i < sizeEnResult; i++)
+
+	for (int i = 0; i < sizeEnResult-1; i++)
 	{
 		intTemp[i] = (int)encodedResult[i];
 		bitset<8> tempBit(intTemp[i]);
@@ -183,15 +184,14 @@ string decodedBinRep(string encodedResult)
 		decodedResult += temp[i];
 		decodedResult += char(32);
 	}
+	temp[sizeEnResult - 1] = decBinRet(encodedResult[sizeEnResult - 1]);
+	decodedResult += temp[sizeEnResult - 1];
+
 	return decodedResult;
 }
 
 int binaryToDecimal(string binNumber)
 {
-	// Write a function that converts a binary number to its decimal equivalent. The functinos takes
-	// one string parameter representing a binary number and returns its decimal representation as an
-	// integer
-
 	int leng = binNumber.length();	// holds the length of the binary number string
 	int backwardIndex;				// holds the backward index of the binary number
 	int poweredNum[50];				// holds the number to multiply for each binary number (2^0, 2^1, etc.)
@@ -199,9 +199,7 @@ int binaryToDecimal(string binNumber)
 	int decimalRep = 0;				// holds the binary representation of a decimal number
 
 	backwardIndex = leng;
-
 	int count = 0;
-
 	while (count < leng)
 	{
 		// this line takes the number equivalent of char '1' or '0' and subtract '0' to make it actual '1's and '0's
@@ -211,25 +209,19 @@ int binaryToDecimal(string binNumber)
 		backwardIndex--;
 		count++;
 	}
-
 	count = 0;		// reset the counter
-
 	while (count <leng)
 	{
 		poweredNum[count] = pow(2, count);
 		count++;
 	}
-
 	count = 0;		// reset the counter
-
 	while (count <leng)
 	{
 		decimalRep += numberToMul[count] * poweredNum[count];
 		count++;
 	}
-
 	return decimalRep;
-
 }
 
 string decBinRet(int quotient)
